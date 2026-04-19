@@ -1,13 +1,8 @@
 # AI LinkedIn Post Creator
 
-> An agentic n8n workflow that researches any topic in real time, writes a professional LinkedIn post, generates a matching AI image, and delivers everything via Email & Telegram — fully automated, zero manual effort.
+>![Workflow Canvas](workflow-screenshot.jpeg) An agentic n8n workflow that researches any topic in real time, writes a professional LinkedIn post, generates a matching AI image, and delivers everything via Email & Telegram — fully automated, zero manual effort.
 
-![Status](https://img.shields.io/badge/Status-Live%20%26%20Deployed-brightgreen)
-![Platform](https://img.shields.io/badge/Platform-n8n-orange)
-![AI](https://img.shields.io/badge/AI-Groq%20LLaMA%203.3%2070B-blue)
-![Deploy](https://img.shields.io/badge/Hosted-Railway%2024%2F7-purple)
-![Cost](https://img.shields.io/badge/Cost-100%25%20Free%20Tier-success)
-
+**Stack:** n8n · Groq LLaMA 3.3 70B · Tavily · Pollinations · Brevo · Telegram · Notion · Railway
 ---
 
 ## Problem Statement
