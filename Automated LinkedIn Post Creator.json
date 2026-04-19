@@ -1,0 +1,409 @@
+{
+  "name": "Automated LinkedIn Post Creator",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "LinkedIn Post Creator",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Post Topic"
+            },
+            {
+              "fieldLabel": "Target Audience"
+            },
+            {
+              "fieldLabel": "Tone",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Professional"
+                  },
+                  {
+                    "option": "Casual"
+                  },
+                  {
+                    "option": "Inspirational"
+                  },
+                  {
+                    "option": "Bold"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Your Email",
+              "fieldType": "email"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        0,
+        0
+      ],
+      "name": "On form submission1",
+      "id": "d54da7c8-8c8f-48d9-911e-9518113c4cc6",
+      "webhookId": "d0dd325e-5ef1-47e3-b955-77ee75875ef1"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json['Post Topic'] }} for {{ $json['Target Audience'] }} — write in a {{ $json['Tone'] }} tone",
+        "options": {
+          "systemMessage": "You are an expert LinkedIn content writer. Write a LinkedIn post with this exact format:\n\n[One powerful hook sentence]\n\n[1-2 sentence context]\n\n1. [Insight one - one line]\n2. [Insight two - one line]\n3. [Insight three - one line]\n\n[One call-to-action question]\n\n#Hashtag1 #Hashtag2 #Hashtag3 #Hashtag4 #Hashtag5\n\nRules:\n- 150-200 words MAX\n- Proper line breaks between each section\n- NO filler like \"Here's a post\" or \"Here are insights\"\n- Start directly with the hook"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "name": "Content Researcher1",
+      "id": "5153789e-eb85-4556-bd08-e82571530b4d"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.output }}",
+        "options": {
+          "systemMessage": "You are an image prompt expert. Read the LinkedIn post and create a single, short, clean visual prompt (max 100 words) for AI image generation. Make it professional, business-themed, no text in image. Output only the image prompt, nothing else.\nAlways end every image prompt with: photorealistic, 8K resolution, professional lighting, LinkedIn post style, high detail, sharp focus\n"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        576,
+        0
+      ],
+      "name": "Image Prompt Generator1",
+      "id": "135704a4-8744-46b5-b759-735308ce9e93"
+    },
+    {
+      "parameters": {
+        "url": "={{ 'https://image.pollinations.ai/prompt/' + encodeURIComponent($json.output.substring(0, 250)) + '?width=1024&height=1024&nologo=true&model=flux' }}\nhttps://image.pollinations.ai/prompt/YOUR_PROMPT?width=1200&height=1200&model=flux&enhance=true&nologo=true",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file",
+              "outputPropertyName": "generated_image"
+            }
+          },
+          "timeout": 60000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        928,
+        0
+      ],
+      "name": "Generate Image1",
+      "id": "aef25f59-5c78-4a19-936e-489993ecbaed"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        256,
+        304
+      ],
+      "name": "Groq Chat Model1",
+      "id": "f14bd345-207f-4ef8-804c-1feee7e881fb",
+      "credentials": {
+        "groqApi": {
+          "id": "r2G3MhowvJxJaDXk",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.tavily.com/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "Bearer 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"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "query",
+              "value": "={{ $('On form submission1').item.json['Post Topic'] }}"
+            },
+            {
+              "name": "search_depth",
+              "value": "basic"
+            },
+            {
+              "name": "max_results",
+              "value": "3"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequestTool",
+      "typeVersion": 4.4,
+      "position": [
+        576,
+        304
+      ],
+      "id": "ab83cd39-ec29-48ed-8af7-33471d96a9e0",
+      "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "resource": "databasePage",
+        "databaseId": {
+          "__rl": true,
+          "value": "346c86e1b0d4802f82a6ef79a35c9d3d",
+          "mode": "id"
+        },
+        "title": "={{ $('On form submission1').item.json['Post Topic'] }}",
+        "propertiesUi": {
+          "propertyValues": [
+            {
+              "key": "Target Audience|rich_text",
+              "textContent": "={{ $('On form submission1').item.json['Target Audience'] }}"
+            },
+            {
+              "key": "Tone|rich_text",
+              "textContent": "={{ $('On form submission1').item.json['Tone'] }}"
+            },
+            {
+              "key": "Generated Post|rich_text",
+              "textContent": "={{ $('Content Researcher1').item.json.output }}"
+            },
+            {
+              "key": "Date|date",
+              "date": "2026-04-18T21:23:28"
+            },
+            {
+              "key": "Email|email",
+              "emailValue": "={{ $('On form submission1').item.json['Your Email'] }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.notion",
+      "typeVersion": 2.2,
+      "position": [
+        1472,
+        0
+      ],
+      "id": "4a393e36-0ee1-4c3b-b187-23da126ebde4",
+      "name": "Create a database page",
+      "credentials": {
+        "notionApi": {
+          "id": "RbQgaHxUaInO9Sip",
+          "name": "Notion account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "7040228417",
+        "text": "=🚀 Your LinkedIn Post is Ready!\n\n📌 Topic: {{ $('On form submission1').item.json['Post Topic'] }}\n👥 Audience: {{ $('On form submission1').item.json['Target Audience'] }}\n🎯 Tone: {{ $('On form submission1').item.json['Tone'] }}\n\n📝 POST CONTENT:\n{{ $('Content Researcher1').item.json.output }}\n\n✅ Also sent to your email!",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1264,
+        304
+      ],
+      "id": "c2eba552-2fbe-4bc7-9f7d-c5fa5b5fa071",
+      "name": "Send a text message",
+      "webhookId": "7d477b47-c30f-4034-97d3-902ba92d489e",
+      "credentials": {
+        "telegramApi": {
+          "id": "kYPf60YIG8UXnqYf",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "sendPhoto",
+        "chatId": "7040228417",
+        "binaryData": true,
+        "binaryPropertyName": "generated_image",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        304
+      ],
+      "id": "2be650d8-2bb7-490c-8cd9-9707c9c9a201",
+      "name": "Send a photo message",
+      "webhookId": "5c8f7071-632c-4349-898c-1ceffa5d8036",
+      "credentials": {
+        "telegramApi": {
+          "id": "kYPf60YIG8UXnqYf",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.brevo.com/v3/smtp/email",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "api-key",
+              "value": "YOUR_BREVO_API_KEY_HERE"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \"sender\": {\"name\": \"LinkedIn Post Creator\", \"email\": \"utkarshkapoor1995@gmail.com\"}, \"to\": [{\"email\": $('On form submission1').item.json['Your Email']}], \"subject\": \"LinkedIn Post Ready: \" + $('On form submission1').item.json['Post Topic'], \"htmlContent\": \"<h2>Your LinkedIn Post 🚀</h2><p>\" + $('Content Researcher1').item.json.output.replace(/\\n/g, '<br/>') + \"</p><br/><p><b>🖼️ AI Generated Image:</b></p><p><a href='https://image.pollinations.ai/prompt/\" + encodeURIComponent($('Image Prompt Generator1').item.json.output) + \"?width=1024&height=1024&nologo=true&model=flux' target='_blank' style='display:inline-block;padding:12px 20px;background:#0077B5;color:white;text-decoration:none;border-radius:6px;font-weight:bold;'>👉 Click to View Image</a></p>\" } }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        1216,
+        0
+      ],
+      "id": "ccd584ff-048d-4983-8837-ef6980a6ecce",
+      "name": "HTTP Request1"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission1": {
+      "main": [
+        [
+          {
+            "node": "Content Researcher1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Researcher1": {
+      "main": [
+        [
+          {
+            "node": "Image Prompt Generator1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Image Prompt Generator1": {
+      "main": [
+        [
+          {
+            "node": "Generate Image1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate Image1": {
+      "main": [
+        [
+          {
+            "node": "Send a photo message",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Groq Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Content Researcher1",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "Image Prompt Generator1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "ai_tool": [
+        [
+          {
+            "node": "Content Researcher1",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a database page": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Create a database page",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "0598e552-8bfc-43c7-b6ee-bf4eaa5c396d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "2fc47afd9403be634a4e68f9b84a1e73a385749814a3c05ed60bfbe752031b11"
+  },
+  "id": "T4JMV9RW1EV06Bbd",
+  "tags": []
+}
