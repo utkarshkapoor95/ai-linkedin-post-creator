@@ -1,25 +1,28 @@
 # AI LinkedIn Post Creator
 
->![Workflow Canvas](workflow-screenshot.jpeg) An agentic n8n workflow that researches any topic in real time, writes a professional LinkedIn post, generates a matching AI image, and delivers everything via Email & Telegram — fully automated, zero manual effort.
+![Workflow Canvas](workflow-screenshot.jpeg)
+
+An agentic n8n workflow that researches any topic in real time, writes a professional LinkedIn post, generates a matching AI image, and delivers everything via Email and Telegram — fully automated, zero manual effort.
 
 **Stack:** n8n · Groq LLaMA 3.3 70B · Tavily · Pollinations · Brevo · Telegram · Notion · Railway
+
 ---
 
 ## Problem Statement
 
 Creating consistent, high-quality LinkedIn content is time-consuming. Most professionals know they should post regularly but struggle with research, writing, and design — all of which take 30–60 minutes per post.
 
-This workflow reduces that to **under 60 seconds**: submit a topic, get a fully written post + AI-generated image delivered directly to your inbox and phone.
+This workflow reduces that to **under 60 seconds**: submit a topic, get a fully written post and AI-generated image delivered directly to your inbox and phone.
 
 ---
 
 ## Live Demo
 
-**Form URL:** [Submit a topic → get your post](https://n8n-production-c82e.up.railway.app/form/d0dd325e-5ef1-47e3-b955-77ee75875ef1)
+**Form URL:** [Submit a topic and get your post](https://n8n-production-c82e.up.railway.app/form/d0dd325e-5ef1-47e3-b955-77ee75875ef1)
 
 **What happens after you submit:**
-- Email arrives with post text + image link
-- Telegram delivers AI image + post instantly
+- Email arrives with post text and image link
+- Telegram delivers AI image and post instantly
 - Notion auto-logs the post with timestamp
 
 ---
@@ -78,25 +81,27 @@ Telegram Delivery
 
 ### Prerequisites
 - n8n instance (local or cloud)
-- Free accounts on: Groq, Tavily, Brevo, Telegram, Notion, Pollinations (no signup needed)
+- Free accounts on: Groq, Tavily, Brevo, Telegram, Notion (Pollinations needs no signup)
 
 ### Step-by-Step Setup
 
 **1. Import the workflow**
-- Download `workflow.json` from this repo
-- In n8n → click **"Import from file"** → upload the JSON
+- Download `Automated LinkedIn Post Creator.json` from this repo
+- In n8n, click **"Import from file"** and upload the JSON
 
 **2. Add your credentials in n8n**
-```
-Groq API Key       → console.groq.com (free)
-Tavily API Key     → tavily.com (free)
-Brevo API Key      → brevo.com (free)
-Telegram Bot Token → create via @BotFather
-Telegram Chat ID   → get via @userinfobot
-Notion Token       → notion.so/my-integrations
-```
+
+| Service | Where to get it |
+|---|---|
+| Groq API Key | console.groq.com (free) |
+| Tavily API Key | tavily.com (free) |
+| Brevo API Key | brevo.com (free) |
+| Telegram Bot Token | create via @BotFather |
+| Telegram Chat ID | get via @userinfobot |
+| Notion Token | notion.so/my-integrations |
 
 **3. Set up Notion Database**
+
 Create a database with these fields:
 - `Title` (text)
 - `Content` (text)
@@ -107,7 +112,7 @@ Create a database with these fields:
 - Toggle workflow to **Active**
 - Open the Form URL
 - Submit any LinkedIn topic
-- Check your email + Telegram within ~30 seconds
+- Check your email and Telegram within 30 seconds
 
 ---
 
@@ -115,11 +120,9 @@ Create a database with these fields:
 
 ```
 ai-linkedin-post-creator/
-│
-├── workflow.json          # Full n8n workflow (import this)
-├── README.md              # This file
-└── assets/
-    └── workflow-screenshot.png   # Visual of the node flow
+├── Automated LinkedIn Post Creator.json   # Full n8n workflow — import this
+├── README.md
+└── workflow-screenshot.jpeg               # Visual of the node flow
 ```
 
 ---
@@ -137,21 +140,9 @@ DALL·E costs money per image. Pollinations generates images via a free HTTP URL
 
 ---
 
-## Future Improvements
-
-- [ ] Add LinkedIn direct posting via LinkedIn API
-- [ ] Schedule posts for optimal engagement times
-- [ ] Add tone selector (professional / casual / storytelling)
-- [ ] Multi-language post generation
-- [ ] Analytics dashboard in Notion (views, engagement tracking)
-
----
-
 ## About
 
-Built by **Utkarsh Kapoor** — MBA candidate at ABV-IIITM Gwalior, transitioning from Operations Management into AI Engineering.
-
-This project is part of an AI & automation portfolio demonstrating agentic workflow design, multi-tool orchestration, and production deployment on free infrastructure.
+Built by **Utkarsh Kapoor** — MBA candidate at ABV-IIITM Gwalior, transitioning from Operations into AI Engineering.
 
 [LinkedIn](https://linkedin.com/in/utkarsh-kapoor-618256203) · [GitHub](https://github.com/utkarshkapoor95) · [n8n Template](https://creators.n8n.io/workflows/15156)
 
